@@ -1,13 +1,17 @@
 package pedro.projeto.organclone.model
 
 import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.Exclude
 import pedro.projeto.organclone.config.ConfiguracaoFirebase
 
 class Usuario {
+    var idUsuario: String
     var nome: String
     var email: String
     var senha: String
-    var idUsuario: String
+    var receitaTotal: Double = 0.0
+    var despesaTotal: Double = 0.0
+
 
 
 
@@ -24,14 +28,7 @@ class Usuario {
 
             firebase.child("usuarios")
                 .child(this.idUsuario)
-                .child(nome)
-                .setValue(this.nome)
-
-            firebase.child("usuarios")
-                .child(this.idUsuario)
-                .child(email)
-                .setValue(this.email)
-
+                .setValue(this)
 
 
         }

@@ -32,6 +32,7 @@ class IntroActivity : AppCompatActivity() {
 
     fun verificarUsuarioLogado(){
         autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao()
+        //autenticacao.signOut()
         if (autenticacao.currentUser != null){
             abrirTelaPrincipal()
         }
