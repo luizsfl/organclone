@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "986963905580",
+    "project_id": "organclone",
+    "storage_bucket": "organclone.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:986963905580:android:1e7d952a79468cedfb5589",
+        "android_client_info": {
+          "package_name": "pedro.projeto.organclone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "986963905580-qbaq1mc1v38ch817himicktsvpo95i6h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pedro.projeto.organclone",
+            "certificate_hash": "f71dd94e5c523c06975e8822d88153984ce4b99b"
+          }
+        },
+        {
+          "client_id": "986963905580-o7vbirnrrik0jc3ord0t4ij30tecboda.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTODGsithYYzJl8EPNyY67FHeHxtA_ezY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "986963905580-o7vbirnrrik0jc3ord0t4ij30tecboda.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
