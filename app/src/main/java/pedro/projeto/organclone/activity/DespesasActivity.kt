@@ -119,9 +119,6 @@ class DespesasActivity : AppCompatActivity() {
             }
 
         })
-
-
-
     }
 
     fun atualizarDespesa(despesaAtualizada : Double){

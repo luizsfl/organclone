@@ -57,6 +57,7 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
     <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/edtDescricao"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
@@ -78,5 +79,6 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         android:contentDescription="Salvar"
+        android:onClick="salvarReceita"
         app:srcCompat="@drawable/ic_confirmar_branco_24" />
 </androidx.constraintlayout.widget.ConstraintLayout>
