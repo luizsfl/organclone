@@ -5,10 +5,10 @@ import com.google.firebase.database.Exclude
 import pedro.projeto.organclone.config.ConfiguracaoFirebase
 
 class Usuario {
-    var idUsuario: String
-    var nome: String
-    var email: String
-    var senha: String
+    lateinit var idUsuario: String
+    lateinit var nome: String
+    lateinit var email: String
+    lateinit var senha: String
     var receitaTotal: Double = 0.0
     var despesaTotal: Double = 0.0
 
@@ -22,8 +22,12 @@ class Usuario {
         this.idUsuario = idUsuario
     }
 
+    constructor() {
+    }
 
-        fun salvar() {
+
+
+    fun salvar() {
             var firebase:DatabaseReference = ConfiguracaoFirebase.getFirebaseDataBse()
 
             firebase.child("usuarios")
