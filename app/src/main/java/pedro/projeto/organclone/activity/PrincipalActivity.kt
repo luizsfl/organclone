@@ -2,20 +2,21 @@ package pedro.projeto.organclone.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.google.firebase.auth.FirebaseAuth
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
-import com.prolificinteractive.materialcalendarview.OnMonthChangedListener
 import pedro.projeto.organclone.R
+import pedro.projeto.organclone.config.ConfiguracaoFirebase
 import pedro.projeto.organclone.databinding.ActivityPrincipalBinding
-import kotlin.math.log
+
 
 class PrincipalActivity : AppCompatActivity() {
     private lateinit var calendarView : MaterialCalendarView
@@ -23,7 +24,8 @@ class PrincipalActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPrincipalBinding
 private lateinit var textoSaldo:TextView
 private lateinit var textoSaldacao:TextView
-
+private lateinit var toolbar: androidx.appcompat.widget.Toolbar
+private lateinit var autenticacao : FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -34,8 +36,9 @@ private lateinit var textoSaldacao:TextView
         calendarView= findViewById(R.id.calendarView)
         configuraCalendarView()
 
-
-        setSupportActionBar(binding.toolbar)
+        toolbar = binding.toolbar
+        toolbar.setTitle("Organize")
+        setSupportActionBar(toolbar)
 
         val navController = findNavController(R.id.nav_host_fragment_content_principal)
         appBarConfiguration = AppBarConfiguration(navController.graph)
@@ -43,6 +46,7 @@ private lateinit var textoSaldacao:TextView
 
         textoSaldo = findViewById(R.id.txtSaldo)
         textoSaldacao = findViewById(R.id.txtSaldacao)
+
 
     /*
         binding.fab.setOnClickListener { view ->
@@ -73,4 +77,26 @@ private lateinit var textoSaldacao:TextView
 
         }
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menuprincipal,menu)
+
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menusair -> {
+                autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao()
+                autenticacao.signOut()
+                var intent = Intent(this,IntroActivity::class.java)
+                startActivity(intent)
+                finish()
+
+            }
+
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
 }

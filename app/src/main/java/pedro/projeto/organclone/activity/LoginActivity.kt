@@ -39,8 +39,8 @@ class LoginActivity : AppCompatActivity() {
                 if (!textoEmail.isEmpty()){
                     if (!textoSenha.isEmpty()){
                         //Caso todos os campos estejam preenchidos
-                       // usuario = Usuario("",textoEmail,textoSenha)
-                        //validarLogin(usuario)
+                        usuario = Usuario("",textoEmail,textoSenha,"")
+                        validarLogin(usuario)
                     }else{
                         Toast.makeText( this,"Preencha a senha", Toast.LENGTH_SHORT).show()
                     }
@@ -79,7 +79,6 @@ class LoginActivity : AppCompatActivity() {
 
     fun verificarUsuarioLogado(){
         autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao()
-        autenticacao.signOut()
         if (autenticacao.currentUser != null){
             abrirTelaPrincipal()
         }
