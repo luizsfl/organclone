@@ -2,26 +2,33 @@ package pedro.projeto.organclone.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Adapter
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
+import com.prolificinteractive.materialcalendarview.CalendarDay
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView
 import pedro.projeto.organclone.R
+import pedro.projeto.organclone.adapter.AdapterMovimentacao
 import pedro.projeto.organclone.config.ConfiguracaoFirebase
 import pedro.projeto.organclone.databinding.ActivityPrincipalBinding
 import pedro.projeto.organclone.helper.Base64Custom
+import pedro.projeto.organclone.model.Movimentacao
 import pedro.projeto.organclone.model.Usuario
 import java.text.DecimalFormat
 
@@ -39,6 +46,19 @@ class PrincipalActivity : AppCompatActivity() {
     private  var receitaTotal: Double = 0.0
     private  var resumoUsuario: Double = 0.0
 
+    private lateinit var mesAnoSelecionado:String
+
+    private lateinit var adapterMovimentacao: AdapterMovimentacao
+
+    private lateinit var recyclerView: RecyclerView
+
+    private lateinit var usuarioRef:DatabaseReference
+
+    private lateinit var valueEventListenerUser: ValueEventListener
+    private lateinit var valueEventListenerMovientacoes: ValueEventListener
+
+    private var listaMovimentacao: MutableList<Movimentacao> = ArrayList()
+    private lateinit var movimentacaoRef:DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,7 +81,17 @@ class PrincipalActivity : AppCompatActivity() {
         textoSaldo = findViewById(R.id.txtSaldo)
         textoSaldacao = findViewById(R.id.txtSaldacao)
 
-        recuperarResumo()
+        recyclerView = findViewById(R.id.recicleMovimentos)
+
+        //configurar adapter
+        adapterMovimentacao = AdapterMovimentacao(listaMovimentacao,this)
+
+        //configurar recycleview
+        var layoutmanager : RecyclerView.LayoutManager = LinearLayoutManager(this)
+        recyclerView.layoutManager = layoutmanager
+        recyclerView.setHasFixedSize(true)
+        recyclerView.adapter = adapterMovimentacao
+
 
     }
 
@@ -82,8 +112,16 @@ class PrincipalActivity : AppCompatActivity() {
     }
 
     fun configuraCalendarView(){
-        calendarView.setOnMonthChangedListener { widget, date ->
+        var dataAtual:CalendarDay = calendarView.currentDate
+        var mesSelecionado:String = String.format("%02d", (dataAtual.month))
 
+        mesAnoSelecionado = mesSelecionado + dataAtual.year.toString()
+        calendarView.setOnMonthChangedListener { widget, date ->
+            var mesSelecionado:String = String.format("%02d", (date.month))
+            mesAnoSelecionado = mesSelecionado + date.year.toString()
+
+            movimentacaoRef.removeEventListener(valueEventListenerMovientacoes)
+            recuperarMovimentacao()
         }
     }
 
@@ -107,16 +145,47 @@ class PrincipalActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    fun recuperarMovimentacao(){
+
+        var emailUsuario = autenticacao.currentUser?.email
+        var idUsuario = Base64Custom.codificarBase64(emailUsuario.toString())
+
+        movimentacaoRef = firebaseRef.child("movimentacao")
+                    .child(idUsuario)
+                    .child(mesAnoSelecionado)
+
+        listaMovimentacao.clear()
+
+        valueEventListenerMovientacoes = movimentacaoRef.addValueEventListener(object : ValueEventListener {
+
+            override fun onDataChange(dataSnapshot: DataSnapshot){
+                for (dado in dataSnapshot.children){
+                    var moviment = dado.getValue<Movimentacao>()
+                    listaMovimentacao.add(moviment!!)
+
+                }
+
+
+                adapterMovimentacao.notifyDataSetChanged()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+
+            }
+
+        })
+    }
+
     fun recuperarResumo(){
 
         var emailUsuario = autenticacao.currentUser?.email
         var idUsuario = Base64Custom.codificarBase64(emailUsuario.toString())
 
-        var usuarioRef:DatabaseReference = firebaseRef.child("usuarios")
+        usuarioRef = firebaseRef.child("usuarios")
             .child(idUsuario)
 
 
-        usuarioRef.addValueEventListener(object : ValueEventListener {
+        valueEventListenerUser = usuarioRef.addValueEventListener(object : ValueEventListener {
 
             override fun onDataChange(dataSnapshot: DataSnapshot){
                 var usuario  =  dataSnapshot.getValue<Usuario>()
@@ -140,5 +209,20 @@ class PrincipalActivity : AppCompatActivity() {
         })
 
     }
+
+    override fun onStart() {
+        super.onStart()
+        recuperarResumo()
+        recuperarMovimentacao()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        usuarioRef.removeEventListener(valueEventListenerUser)
+        movimentacaoRef.removeEventListener(valueEventListenerMovientacoes)
+
+    }
+
+
 
 }

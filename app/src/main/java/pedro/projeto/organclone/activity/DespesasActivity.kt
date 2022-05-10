@@ -71,6 +71,8 @@ class DespesasActivity : AppCompatActivity() {
            atualizarDespesa(despesaAtualizada)
 
            movimentacao.salvar(data)
+
+           finish()
        }
 
     }

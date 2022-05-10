@@ -70,6 +70,9 @@ class ReceitasActivity : AppCompatActivity() {
             atualizarReceita(receitaAtualizada)
 
             movimentacao.salvar(data)
+
+            finish()
+
         }
 
     }
