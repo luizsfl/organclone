@@ -6,13 +6,13 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Adapter
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
@@ -82,6 +82,8 @@ class PrincipalActivity : AppCompatActivity() {
         textoSaldacao = findViewById(R.id.txtSaldacao)
 
         recyclerView = findViewById(R.id.recicleMovimentos)
+
+        swipe()
 
         //configurar adapter
         adapterMovimentacao = AdapterMovimentacao(listaMovimentacao,this)
@@ -223,6 +225,35 @@ class PrincipalActivity : AppCompatActivity() {
 
     }
 
+    fun swipe(){
 
+        val itemTouch: ItemTouchHelper.SimpleCallback =
+            object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+                override fun onMove(recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
+                ): Boolean {
+
+                    return false
+                }
+
+                override fun getMovementFlags(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder
+                ): Int {
+                    var dragFlags:Int = ItemTouchHelper.ACTION_STATE_IDLE
+                    var swipesFlags :Int = ItemTouchHelper.END
+                    return makeMovementFlags(dragFlags,swipesFlags)
+                }
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+
+                }
+
+            }
+
+        ItemTouchHelper(itemTouch).attachToRecyclerView(recyclerView)
+
+    }
 
 }
