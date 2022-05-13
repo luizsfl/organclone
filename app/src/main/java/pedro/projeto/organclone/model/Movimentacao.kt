@@ -13,6 +13,7 @@ class Movimentacao {
     var descricao : String = ""
     var tipo : String = ""
     var valor: Double = 0.0
+    var key  : String = ""
 
 
     fun salvar(dataEscolhida :String){

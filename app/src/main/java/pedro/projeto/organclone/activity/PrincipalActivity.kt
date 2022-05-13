@@ -1,5 +1,6 @@
 package pedro.projeto.organclone.activity
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +8,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -45,6 +48,7 @@ class PrincipalActivity : AppCompatActivity() {
     private  var despesaTotal: Double = 0.0
     private  var receitaTotal: Double = 0.0
     private  var resumoUsuario: Double = 0.0
+    private lateinit var movimentacao: Movimentacao
 
     private lateinit var mesAnoSelecionado:String
 
@@ -156,13 +160,16 @@ class PrincipalActivity : AppCompatActivity() {
                     .child(idUsuario)
                     .child(mesAnoSelecionado)
 
-        listaMovimentacao.clear()
-
         valueEventListenerMovientacoes = movimentacaoRef.addValueEventListener(object : ValueEventListener {
 
             override fun onDataChange(dataSnapshot: DataSnapshot){
+
+                listaMovimentacao.clear()
+
                 for (dado in dataSnapshot.children){
                     var moviment = dado.getValue<Movimentacao>()
+                    moviment?.key = dado.key.toString()
+
                     listaMovimentacao.add(moviment!!)
 
                 }
@@ -247,7 +254,7 @@ class PrincipalActivity : AppCompatActivity() {
                 }
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-
+                    excluirMovimentacao(viewHolder)
                 }
 
             }
@@ -255,5 +262,71 @@ class PrincipalActivity : AppCompatActivity() {
         ItemTouchHelper(itemTouch).attachToRecyclerView(recyclerView)
 
     }
+
+
+    fun excluirMovimentacao(viewHolder: RecyclerView.ViewHolder){
+        var alertDialog: AlertDialog.Builder = AlertDialog.Builder(this)
+
+        alertDialog.setTitle("Excluir Movimentação da conta")
+        alertDialog.setMessage("Você tem certeza que deseja realmente excluir")
+        alertDialog.setCancelable(false)
+
+        alertDialog.setPositiveButton("Confirmar",DialogInterface.OnClickListener { dialog, which ->
+            var posicao = viewHolder.adapterPosition
+            movimentacao = listaMovimentacao.get(posicao)
+
+            var emailUsuario = autenticacao.currentUser?.email
+            var idUsuario = Base64Custom.codificarBase64(emailUsuario.toString())
+
+            movimentacaoRef = firebaseRef.child("movimentacao")
+                .child(idUsuario)
+                .child(mesAnoSelecionado)
+
+            movimentacaoRef.child(movimentacao.key).removeValue()
+            Log.e("dados",listaMovimentacao.size.toString())
+            recuperarMovimentacao()
+            Log.e("dados",listaMovimentacao.size.toString())
+
+           // adapterMovimentacao.notifyDataSetChanged()
+
+
+            atualizarSaldo(movimentacao)
+            Log.e("dados",listaMovimentacao.size.toString())
+
+
+        })
+
+        alertDialog.setNegativeButton("Cancelar",DialogInterface.OnClickListener { dialog, which ->
+            Toast.makeText(this,"Cancelado",Toast.LENGTH_SHORT).show()
+            adapterMovimentacao.notifyDataSetChanged()
+
+        })
+
+        var alert :AlertDialog = alertDialog.create()
+        alert.show()
+
+    }
+
+    fun atualizarSaldo(movimentacao:Movimentacao){
+        var emailUsuario = autenticacao.currentUser?.email
+        var idUsuario = Base64Custom.codificarBase64(emailUsuario.toString())
+
+        usuarioRef = firebaseRef.child("usuarios")
+            .child(idUsuario)
+
+        if (movimentacao.tipo.equals("R")){
+            receitaTotal = receitaTotal - movimentacao.valor
+            usuarioRef.child("receitaTotal").setValue(receitaTotal)
+
+        }
+        if (movimentacao.tipo.equals("D")){
+            despesaTotal = despesaTotal - movimentacao.valor
+            usuarioRef.child("despesaTotal").setValue(receitaTotal)
+        }
+
+    }
+
+
+
 
 }
