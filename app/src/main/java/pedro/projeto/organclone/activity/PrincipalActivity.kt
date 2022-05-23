@@ -203,7 +203,7 @@ class PrincipalActivity : AppCompatActivity() {
                 receitaTotal = usuario!!.receitaTotal
                 resumoUsuario = receitaTotal - despesaTotal
 
-                textoSaldacao.text = "Olá " + usuario.nome
+                textoSaldacao.text = "Olá, " + usuario.nome
 
                 var decimalFormat : DecimalFormat = DecimalFormat("0.##")
                 var resultadoFormatado = decimalFormat.format(resumoUsuario)
